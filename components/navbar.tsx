@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import SignIn from "./sign-in";
 import { auth } from "@/auth";
-import { SignOut } from "./sign-out";
+import { SignOut } from "./sign-out-server";
 
 const Navbar = async () => {
   const session = await auth();
@@ -28,7 +28,12 @@ const Navbar = async () => {
                 </span>
               </>
             ) : (
-              <SignOut />
+              <div className="flex flex-row items-center justify-center gap-4 text-base text-black">
+                <Link href="/home" className="m-8">
+                  Home
+                </Link>
+                <SignOut />
+              </div>
             )}
           </div>
         </div>
