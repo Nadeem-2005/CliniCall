@@ -22,6 +22,8 @@ import {
 const Page = async () => {
   const session = await auth();
 
+  console.log(session);
+
   return !session ? (
     redirect("/")
   ) : (
