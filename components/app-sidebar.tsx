@@ -141,8 +141,8 @@ const data = {
   ],
   projects: [
     {
-      name: "Design Engineering",
-      url: "#",
+      name: "Get verified as a Doctor",
+      url: "/doctor-verification",
       icon: Frame,
     },
     {

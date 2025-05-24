@@ -1,6 +1,14 @@
-import { AppSidebar } from "@/components/app-sidebar";
+import React from "react";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { AppSidebar } from "@/components/app-sidebar";
+
+import { Separator } from "@/components/ui/separator";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 
 import {
   Breadcrumb,
@@ -10,16 +18,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
 
-export default async function Page() {
+const Page = async () => {
   const session = await auth();
-  // console.log("session", session); // for debuggin purposes
+
   return !session ? (
     redirect("/")
   ) : (
@@ -33,20 +35,17 @@ export default async function Page() {
               orientation="vertical"
               className="mr-2 data-[orientation=vertical]:h-4"
             />
-
-            {/* <Breadcrumb>
+            <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
+                  <BreadcrumbLink href="/dashboard">DashBoard</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+                  <BreadcrumbPage>Get verified as a doctor </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
-            </Breadcrumb> */}
+            </Breadcrumb>
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
@@ -60,4 +59,6 @@ export default async function Page() {
       </SidebarInset>
     </SidebarProvider>
   );
-}
+};
+
+export default Page;
