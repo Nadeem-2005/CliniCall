@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/app-sidebar";
 
+import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -58,8 +59,24 @@ const Page = async () => {
           </div>
           <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
         </div> */}
+        <div className="bg-white border-l-4 border-black text-black p-4 my-6 rounded-md shadow-sm">
+          <strong>Note:</strong> Only register here if you aren't associated
+          with a hospital. If you want to register a Clinic or Hospital, please
+          click{" "}
+          <Link
+            href="/dashboard/clinic-registration"
+            className="underline text-black hover:text-gray-800"
+          >
+            here
+          </Link>
+          .
+        </div>
         <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min p-6">
-          <form className="space-y-4 max-w-xl mx-auto">
+          <form
+            className="space-y-4 max-w-xl mx-auto"
+            action="/api/submit"
+            method="POST"
+          >
             <div>
               <label className="block text-sm font-medium mb-1" htmlFor="name">
                 Full Name
@@ -85,6 +102,8 @@ const Page = async () => {
                 className="w-full border rounded-md p-2"
                 // placeholder={session?.user?.email || "Enter your email"}
                 value={session?.user?.email || ""} // Pre-fill with user's email if available
+                contentEditable={false} // Make it read-only
+                readOnly
               />
             </div>
 
@@ -132,7 +151,65 @@ const Page = async () => {
                 className="w-full border rounded-md p-2"
               />
             </div>
-
+            <div>
+              <label
+                className="block text-sm font-medium mb-1"
+                htmlFor="timing"
+              >
+                Timing
+              </label>
+              <input
+                type="text"
+                id="timing"
+                name="timing"
+                required
+                className="w-full border rounded-md p-2"
+                placeholder="e.g., 9 AM - 5 PM"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1" htmlFor="days">
+                Days
+              </label>
+              <input
+                type="text"
+                id="days"
+                name="days"
+                required
+                className="w-full border rounded-md p-2"
+                placeholder="e.g., Monday to Friday"
+              />
+            </div>
+            <div>
+              <label
+                className="block text-sm font-medium mb-1"
+                htmlFor="address"
+              >
+                Address
+              </label>
+              <input
+                type="text"
+                id="address"
+                name="address"
+                required
+                className="w-full border rounded-md p-2"
+              />
+            </div>
+            <div>
+              <label
+                className="block text-sm font-medium mb-1"
+                htmlFor="location"
+              >
+                Location Link (Google Maps)
+              </label>
+              <input
+                type="text"
+                id="location"
+                name="loccation"
+                required
+                className="w-full border rounded-md p-2"
+              />
+            </div>
             <div>
               <label className="block text-sm font-medium mb-1" htmlFor="about">
                 About You

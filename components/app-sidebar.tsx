@@ -8,7 +8,7 @@ import {
   BookOpen,
   Bot,
   Command,
-  Frame,
+  Stethoscope,
   GalleryVerticalEnd,
   Map,
   PieChart,
@@ -143,7 +143,7 @@ const data = {
     {
       name: "Get verified as a Doctor",
       url: "/dashboard/doctor-verification",
-      icon: Frame,
+      icon: Stethoscope,
     },
     {
       name: "Sales & Marketing",
