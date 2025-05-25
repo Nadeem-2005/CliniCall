@@ -11,7 +11,7 @@ import {
   Stethoscope,
   GalleryVerticalEnd,
   Map,
-  PieChart,
+  Hospital,
   Settings2,
   SquareTerminal,
 } from "lucide-react";
@@ -146,9 +146,9 @@ const data = {
       icon: Stethoscope,
     },
     {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
+      name: "Hospital/Clinic Registration",
+      url: "/dashboard/clinic-registration",
+      icon: Hospital,
     },
     {
       name: "Travel",

@@ -51,7 +51,7 @@ export async function POST(req: Request) {
     })
 
     // return NextResponse.redirect(new URL("/dashboard", req.url));
-    return NextResponse.json({message: "Doctor created successfully"}, {status: 201});
+    return NextResponse.redirect(new URL("/dashboard", req.url));
   } catch (error) {
     console.error("Error creating doctor:", error);
     return NextResponse.json({error: "Internal Server Error"}, {status: 500});

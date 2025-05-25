@@ -45,7 +45,7 @@ const Page = async () => {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Get verified as a doctor </BreadcrumbPage>
+                  <BreadcrumbPage>Hospital/Clinic Registration</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
