@@ -142,7 +142,7 @@ const data = {
   projects: [
     {
       name: "Get verified as a Doctor",
-      url: "/doctor-verification",
+      url: "/dashboard/doctor-verification",
       icon: Frame,
     },
     {
