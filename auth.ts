@@ -15,7 +15,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           name: profile.name,
           email: profile.email,
           image: profile.picture,
-          role: "user" // Google profile has no role, so default to 'user'
+          role: profile.role ?? "user" // Google profile has no role, so default to 'user'
         };
       }
     })
