@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 
 import * as React from "react";
 import {
-  AudioWaveform,
+  FilePlus2,
   BookOpen,
   Bot,
   Command,
@@ -17,9 +17,10 @@ import {
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
-import { NavProjects } from "@/components/nav-projects";
+import { JoinUs } from "@/components/nav-join-us";
 import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
+import { NavAdmin } from "@/components/nav-admin";
 import {
   Sidebar,
   SidebarContent,
@@ -139,7 +140,7 @@ const data = {
       ],
     },
   ],
-  projects: [
+  joinUS: [
     {
       name: "Get verified as a Doctor",
       url: "/dashboard/doctor-verification",
@@ -150,11 +151,18 @@ const data = {
       url: "/dashboard/clinic-registration",
       icon: Hospital,
     },
+  ],
+  reviewRequests: [
     {
-      name: "Travel",
-      url: "#",
-      icon: Map,
+      name: "Review Requests",
+      url: "/dashboard/review-requests",
+      icon: FilePlus2,
     },
+    // {
+    //   name: "Trash",
+    //   url: "/dashboard/trash",
+    //   icon: Trash2,
+    // },
   ],
 };
 
@@ -168,7 +176,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <JoinUs joinUs={data.joinUS} />
+        <>
+          {session?.user?.role === "admin" ? (
+            <NavAdmin reviewRequests={data.reviewRequests} />
+          ) : null}
+        </>
       </SidebarContent>
       <SidebarFooter>
         {/*explicitly passing user details*/}

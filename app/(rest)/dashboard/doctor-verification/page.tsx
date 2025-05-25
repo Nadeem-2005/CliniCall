@@ -71,7 +71,7 @@ const Page = async () => {
           </Link>
           .
         </div>
-        <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min p-6">
+        <div className="relative z-0 bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min p-6">
           <form
             className="space-y-4 max-w-xl mx-auto"
             action="/api/submit"

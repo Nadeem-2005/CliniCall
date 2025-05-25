@@ -28,10 +28,10 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-export function NavProjects({
-  projects,
+export function JoinUs({
+  joinUs,
 }: {
-  projects: {
+  joinUs: {
     name: string;
     url: string;
     icon: LucideIcon;
@@ -43,7 +43,7 @@ export function NavProjects({
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Join us</SidebarGroupLabel>
       <SidebarMenu>
-        {projects.map((item) => (
+        {joinUs.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
               <Link href={item.url}>
