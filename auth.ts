@@ -35,7 +35,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Google({
       profile(profile) {
-        console.log("Google profile object:", profile); // log profile on sign-in
+        // console.log("Google profile object:", profile); // log profile on sign-in
         return {
           id: profile.sub,
           name: profile.name,
