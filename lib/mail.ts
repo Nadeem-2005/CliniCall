@@ -9,7 +9,7 @@ export const transporter = nodemailer.createTransport({
   },
 });
 
-export async function sendApprovalMail(to: string, name: string) {
+export async function sendApprovalMailToDoctor(to: string, name: string) {
   return transporter.sendMail({
     from: `"Clinical App Team" <${process.env.EMAIL_USER}>`,
     to,

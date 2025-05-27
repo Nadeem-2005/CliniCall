@@ -173,7 +173,7 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession();
-  console.log("session from side bar", session); // for debugging purposes
+  // console.log("session from side bar", session); // for debugging purposes
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

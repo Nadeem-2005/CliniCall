@@ -147,15 +147,15 @@ export default async function Page() {
                         <button
                           type="submit"
                           name="action"
-                          value="reject"
-                          className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition"
+                          value="accept"
+                          className="bg-green-600 text-white text-sm px-3 py-1 rounded-md hover:bg-green-700 transition"
                         >
-                          Reject
+                          Accept
                         </button>
                         <button
                           type="submit"
                           name="action"
-                          value="delete"
+                          value="reject"
                           className="bg-red-600 text-white text-sm px-3 py-1 rounded-md hover:bg-red-700 transition"
                         >
                           Delete
