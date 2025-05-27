@@ -74,7 +74,7 @@ const Page = async () => {
         <div className="relative z-0 bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min p-6">
           <form
             className="space-y-4 max-w-xl mx-auto"
-            action="/api/submit"
+            action="/api/doctor/submit"
             method="POST"
           >
             <div>
@@ -151,34 +151,90 @@ const Page = async () => {
                 className="w-full border rounded-md p-2"
               />
             </div>
+            {/* Timing Section - Side by Side */}
             <div>
-              <label
-                className="block text-sm font-medium mb-1"
-                htmlFor="timing"
-              >
-                Timing
-              </label>
-              <input
-                type="text"
-                id="timing"
-                name="timing"
-                required
-                className="w-full border rounded-md p-2"
-                placeholder="e.g., 9 AM - 5 PM"
-              />
+              <label className="block text-sm font-medium mb-1">Timing</label>
+              <div className="flex gap-4">
+                <select
+                  id="timing_from"
+                  name="timing_from"
+                  required
+                  className="flex-1 border rounded-md p-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  {Array.from({ length: 24 }, (_, hour) => {
+                    const value = `${hour.toString().padStart(2, "0")}:00`;
+                    return (
+                      <option key={value} value={value}>
+                        {value}
+                      </option>
+                    );
+                  })}
+                </select>
+                to
+                <select
+                  id="timing_to"
+                  name="timing_to"
+                  required
+                  className="flex-1 border rounded-md p-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  {Array.from({ length: 24 }, (_, hour) => {
+                    const value = `${hour.toString().padStart(2, "0")}:00`;
+                    return (
+                      <option key={value} value={value}>
+                        {value}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
             </div>
+
+            {/* Days Section - Side by Side */}
             <div>
-              <label className="block text-sm font-medium mb-1" htmlFor="days">
-                Days
-              </label>
-              <input
-                type="text"
-                id="days"
-                name="days"
-                required
-                className="w-full border rounded-md p-2"
-                placeholder="e.g., Monday to Friday"
-              />
+              <label className="block text-sm font-medium mb-1">Days</label>
+              <div className="flex gap-4">
+                <select
+                  id="days_from"
+                  name="days_from"
+                  required
+                  className="flex-1 border rounded-md p-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  {[
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday",
+                    "Sunday",
+                  ].map((day) => (
+                    <option key={day} value={day}>
+                      {day}
+                    </option>
+                  ))}
+                </select>
+                to
+                <select
+                  id="days_to"
+                  name="days_to"
+                  required
+                  className="flex-1 border rounded-md p-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  {[
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday",
+                    "Sunday",
+                  ].map((day) => (
+                    <option key={day} value={day}>
+                      {day}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div>
               <label

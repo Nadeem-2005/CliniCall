@@ -18,6 +18,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   Doctor        Doctor?
+  Hospital      Hospital?
 }
 
 model Account {
@@ -58,8 +59,27 @@ model Doctor {
   status         String @default("pending")
   address        String
   location       String
-  timing         String
-  days           String
+  timing_from    String
+  timing_to      String
+  days_from      String
+  days_to        String
   user           User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
 
+model Hospital {
+  id          String  @id @default(cuid())
+  userID      String  @unique
+  name        String
+  email       String  @unique
+  phone       String
+  address     String
+  location    String
+  speciality  String
+  description String?
+  timing_from String
+  timing_to   String
+  days_from   String
+  days_to     String
+  status      String  @default("pending")
+  user        User    @relation(fields: [userID], references: [id], onDelete: Cascade)
 }

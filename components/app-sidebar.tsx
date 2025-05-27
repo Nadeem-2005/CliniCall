@@ -155,7 +155,7 @@ const data = {
   reviewRequests: [
     {
       name: "Review Requests",
-      url: "/dashboard/review-requests",
+      url: "/admin/review-requests",
       icon: FilePlus2,
     },
     // {

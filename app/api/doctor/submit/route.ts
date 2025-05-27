@@ -7,7 +7,7 @@ export async function POST(req: Request) {
   const session = await auth();
 
   if(!session){
-    return NextResponse.json({error: "Unauthorized"}, {status: 401});
+    return NextResponse.redirect(new URL("/" , req.url));
   }
 
   const data = await req.formData();
@@ -20,8 +20,10 @@ export async function POST(req: Request) {
   const about = data.get("about") as string;
   const address = data.get("address") as string;
   const location = data.get("location") as string;
-  const timing = data.get("timing") as string;
-  const days = data.get("days") as string;
+  const timing_from = data.get("timing_from") as string;
+  const timing_to = data.get("timing_to") as string;
+  const days_from = data.get("days_from") as string;
+  const days_to = data.get("days_to") as string;
 
   try {
     const existingDoc = await prisma.doctor.findUnique({
@@ -45,8 +47,10 @@ export async function POST(req: Request) {
             about,
             address,
             location,
-            timing ,
-            days,
+            timing_from ,
+            timing_to,
+            days_from,
+            days_to,
         }
     })
 
