@@ -24,7 +24,7 @@ export default async function Page() {
 
   const doctot_list = await prisma.doctor.findMany({
     where: {
-      status: "pending",
+      status: "approved",
     },
     select: {
       userId: true,
@@ -38,7 +38,7 @@ export default async function Page() {
 
   const hospital_list = await prisma.hospital.findMany({
     where: {
-      status: "pending",
+      status: "approved",
     },
     select: {
       userID: true,
@@ -71,7 +71,7 @@ export default async function Page() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Review Requests</BreadcrumbPage>
+                  <BreadcrumbPage>Accepted Requests</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
