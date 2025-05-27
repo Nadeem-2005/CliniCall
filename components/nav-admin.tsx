@@ -29,9 +29,9 @@ import {
 } from "@/components/ui/sidebar";
 
 export function NavAdmin({
-  reviewRequests,
+  adminFunctionalities,
 }: {
-  reviewRequests: {
+  adminFunctionalities: {
     name: string;
     url: string;
     icon: LucideIcon;
@@ -43,7 +43,7 @@ export function NavAdmin({
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Admin Panel</SidebarGroupLabel>
       <SidebarMenu>
-        {reviewRequests.map((item) => (
+        {adminFunctionalities.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
               <Link href={item.url}>

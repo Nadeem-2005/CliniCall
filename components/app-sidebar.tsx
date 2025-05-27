@@ -7,10 +7,10 @@ import {
   FilePlus2,
   BookOpen,
   Bot,
-  Command,
+  BadgeX,
   Stethoscope,
   GalleryVerticalEnd,
-  Map,
+  ShieldCheck,
   Hospital,
   Settings2,
   SquareTerminal,
@@ -152,17 +152,22 @@ const data = {
       icon: Hospital,
     },
   ],
-  reviewRequests: [
+  adminFunctionalities: [
     {
       name: "Review Requests",
       url: "/admin/review-requests",
       icon: FilePlus2,
     },
-    // {
-    //   name: "Trash",
-    //   url: "/dashboard/trash",
-    //   icon: Trash2,
-    // },
+    {
+      name: "Accepted Requests",
+      url: "/admin/accepted-requests",
+      icon: ShieldCheck,
+    },
+    {
+      name: "Rejected Requests",
+      url: "/admin/rejected-requests",
+      icon: BadgeX,
+    },
   ],
 };
 
@@ -176,10 +181,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <JoinUs joinUs={data.joinUS} />
+        <>
+          {session?.user?.role == "user" ? (
+            <JoinUs joinUs={data.joinUS} />
+          ) : null}
+        </>
         <>
           {session?.user?.role === "admin" ? (
-            <NavAdmin reviewRequests={data.reviewRequests} />
+            <NavAdmin adminFunctionalities={data.adminFunctionalities} />
           ) : null}
         </>
       </SidebarContent>
