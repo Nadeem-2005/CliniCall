@@ -9,7 +9,7 @@ import {
   Bot,
   BadgeX,
   Stethoscope,
-  GalleryVerticalEnd,
+  Activity,
   ShieldCheck,
   Hospital,
   Settings2,
@@ -38,9 +38,9 @@ const data = {
   // },
   teams: [
     {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
+      name: "CliniCall",
+      logo: Activity,
+      plan: "Your Health, Our Priority",
     },
     // {
     //   name: "Acme Corp.",
@@ -178,6 +178,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
+        {/* <h1 className="dancing-script text-4xl">CliniCall</h1> */}
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
