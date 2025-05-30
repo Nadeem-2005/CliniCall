@@ -1,7 +1,16 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { sendApprovalMail } from "@/lib/mail";
+import { sendApprovalMailToHospital, sendRejectionMailToHospital } from "@/lib/mail";
+import Pusher from "pusher";
+
+
+const pusher = new Pusher({
+  appId: process.env.PUSHER_APP_ID || "",
+    key: process.env.PUSHER_KEY || "",
+    secret: process.env.PUSHER_SECRET || "",
+    cluster: process.env.PUSHER_CLUSTER || "",
+})
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -31,8 +40,20 @@ export async function POST(req: Request) {
         where: { id: userID },
         data: { role: "hospital" },
       });
+      // sending approval email to the hospital
+      await sendApprovalMailToHospital(updatedhospital.email, updatedhospital.name);
 
-      await sendApprovalMail(updatedhospital.email, updatedhospital.name);
+      await pusher.trigger(`user-${userID}`, "hospital-approved", {
+        message: "Your application has been approved!",
+      });
+
+    }
+    else{
+      await sendRejectionMailToHospital(updatedhospital.email, updatedhospital.name);
+
+      await pusher.trigger(`user-${userID}`, "hospital-rejected", {
+        message: "Your application has been rejected.",
+      });
     }
 
     return NextResponse.redirect(new URL("/dashboard", req.url));

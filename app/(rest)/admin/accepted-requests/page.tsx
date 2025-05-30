@@ -187,7 +187,7 @@ export default async function Page() {
                   {hospital_list.map((hospital) => (
                     <form
                       key={hospital.userID}
-                      action="/api/hospital/verify"
+                      action="/api/hospitals/verify"
                       method="POST"
                       className="border rounded-lg bg-white shadow-sm p-4 md:grid md:grid-cols-6 md:items-center md:gap-4 md:px-4"
                     >

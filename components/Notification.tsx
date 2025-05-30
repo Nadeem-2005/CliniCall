@@ -48,7 +48,7 @@ export default function NotificationPage({
       channelsRef.current.push(channel);
 
       channel.bind("new-doctor", (data: { name: string }) => {
-        console.log("📢 Admin received new-doctor notification:", data);
+        console.log("Admin received new-doctor notification:", data);
         setNotifications((prev) => [
           `New doctor: ${data.name} is waiting for approval`,
           ...prev,
@@ -57,36 +57,43 @@ export default function NotificationPage({
     }
 
     // Doctor (user or doctor) notifications
-    if (role === "user" || role === "doctor") {
+    if (role === "user" || role === "doctor" || role === "hospital") {
       const channelName = `user-${id}`;
-      console.log("👨‍⚕️ Setting up public channel:", channelName);
+      console.log("Setting up public channel:", channelName);
 
       const channel = pusherRef.current.subscribe(channelName);
       channelsRef.current.push(channel);
 
       // Debug subscription status
       channel.bind("pusher:subscription_succeeded", () => {
-        console.log(
-          "✅ Successfully subscribed to public channel:",
-          channelName
-        );
+        console.log(" Successfully subscribed to public channel:", channelName);
       });
 
       channel.bind("pusher:subscription_error", (error: any) => {
         console.error(
-          "❌ Failed to subscribe to public channel:",
+          "Failed to subscribe to public channel:",
           channelName,
           error
         );
       });
 
       channel.bind("doctor-approved", (data: { message: string }) => {
-        console.log("🎉 Received doctor-approved notification:", data);
+        console.log(" Received doctor-approved notification:", data);
         setNotifications((prev) => [data.message, ...prev]);
       });
 
       channel.bind("doctor-rejected", (data: { message: string }) => {
-        console.log("❌ Received doctor-rejected notification:", data);
+        console.log(" Received doctor-rejected notification:", data);
+        setNotifications((prev) => [data.message, ...prev]);
+      });
+
+      channel.bind("hospital-approved", (data: { message: string }) => {
+        console.log(" Received hospital-approved notification:", data);
+        setNotifications((prev) => [data.message, ...prev]);
+      });
+
+      channel.bind("hospital-rejected", (data: { message: string }) => {
+        console.log(" Received hospital-rejected notification:", data);
         setNotifications((prev) => [data.message, ...prev]);
       });
     }

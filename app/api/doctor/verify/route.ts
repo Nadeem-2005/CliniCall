@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { sendApprovalMailToDoctor } from "@/lib/mail";
+import { sendApprovalMailToDoctor,sendRejectionMailToDoctor } from "@/lib/mail";
 import Pusher from "pusher";
 
 export async function POST(req: Request) {
@@ -54,6 +54,11 @@ export async function POST(req: Request) {
         message: "Your application has been approved!",
       });
     } else if (newStatus === "rejected") {
+
+      //sending rejection email to the doctor
+      await sendRejectionMailToDoctor(updatedDoctor.email, updatedDoctor.name);  
+      
+      //sending realtime push notification to the doctor
       await pusher.trigger(`user-${userId}`, "doctor-rejected", {
         message: "Your application has been rejected.",
       });
