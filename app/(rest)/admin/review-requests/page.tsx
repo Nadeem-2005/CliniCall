@@ -158,7 +158,7 @@ export default async function Page() {
                           value="reject"
                           className="bg-red-600 text-white text-sm px-3 py-1 rounded-md hover:bg-red-700 transition"
                         >
-                          Delete
+                          Reject
                         </button>
                       </div>
                     </form>

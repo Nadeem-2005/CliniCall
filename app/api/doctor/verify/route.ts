@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { sendApprovalMailToDoctor,sendRejectionMailToDoctor } from "@/lib/mail";
+import { sendApprovalMailToDoctor, sendRejectionMailToDoctor } from "@/lib/mail";
 import Pusher from "pusher";
 
 export async function POST(req: Request) {
-
   const session = await auth();
 
   const pusher = new Pusher({
@@ -17,27 +16,40 @@ export async function POST(req: Request) {
 
   if (!session) return NextResponse.redirect(new URL("/", req.url));
 
-  console.log(session);
-
   const data = await req.formData();
   const userId = data.get("userId") as string;
   const action = data.get("action") as string;
-
-  console.log("Received data:", { userId, action });
-
 
   if (!userId || !action) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
   try {
-    const newStatus = action === "accept" ? "approved" : "rejected";
+    if (action === "delete") {
+      // First delete the doctor
+      await prisma.doctor.delete({
+        where: { userId },
+      });
 
+      // Then optionally delete the user (if needed)
+      // await prisma.user.delete({
+      //   where: { id: userId },
+      // });
+
+      // Optionally notify the user (if frontend handles deletion info)
+      await pusher.trigger(`user-${userId}`, "doctor-deleted", {
+        message: "Your doctor application has been removed.",
+      });
+
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+
+    const newStatus = action === "accept" ? "approved" : "rejected";
 
     const updatedDoctor = await prisma.doctor.update({
       where: { userId },
       data: { status: newStatus },
-      select: { name: true, email: true } // needed for email
+      select: { name: true, email: true },
     });
 
     if (newStatus === "approved") {
@@ -46,19 +58,14 @@ export async function POST(req: Request) {
         data: { role: "doctor" },
       });
 
-      //sending approval email to the doctor
       await sendApprovalMailToDoctor(updatedDoctor.email, updatedDoctor.name);
 
-      //sending realtime push notification to the doctor
       await pusher.trigger(`user-${userId}`, "doctor-approved", {
         message: "Your application has been approved!",
       });
     } else if (newStatus === "rejected") {
+      await sendRejectionMailToDoctor(updatedDoctor.email, updatedDoctor.name);
 
-      //sending rejection email to the doctor
-      await sendRejectionMailToDoctor(updatedDoctor.email, updatedDoctor.name);  
-      
-      //sending realtime push notification to the doctor
       await pusher.trigger(`user-${userId}`, "doctor-rejected", {
         message: "Your application has been rejected.",
       });
@@ -66,7 +73,7 @@ export async function POST(req: Request) {
 
     return NextResponse.redirect(new URL("/dashboard", req.url));
   } catch (error) {
-    console.error("Error updating status:", error);
+    console.error("Error processing request:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

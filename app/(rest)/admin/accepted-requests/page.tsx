@@ -224,22 +224,22 @@ export default async function Page() {
                         {hospital.speciality}
                       </div>
 
-                      <div className="flex gap-2 justify-end md:justify-center col-span-2">
-                        <button
-                          type="submit"
-                          name="action"
-                          value="accept"
-                          className="bg-green-600 text-white text-sm px-3 py-1 rounded-md hover:bg-green-700 transition"
-                        >
-                          Accept
-                        </button>
+                      <div className="flex gap-2 justify-end md:justify-center">
                         <button
                           type="submit"
                           name="action"
                           value="reject"
-                          className="bg-red-600 text-white text-sm px-3 py-1 rounded-md hover:bg-red-700 transition"
+                          className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition"
                         >
                           Reject
+                        </button>
+                        <button
+                          type="submit"
+                          name="action"
+                          value="delete"
+                          className="bg-red-600 text-white text-sm px-3 py-1 rounded-md hover:bg-red-700 transition"
+                        >
+                          Delete
                         </button>
                       </div>
                     </form>

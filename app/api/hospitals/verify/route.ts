@@ -26,6 +26,26 @@ export async function POST(req: Request) {
   }
 
   try {
+    if (action === "delete") {
+      // Delete hospital
+      await prisma.hospital.delete({
+        where: { userID },
+      });
+
+      // Optionally delete the user (commented out)
+      // await prisma.user.delete({
+      //   where: { id: userId },
+      // });
+
+      // Notify user via Pusher
+      await pusher.trigger(`user-${userID}`, "hospital-deleted", {
+        message: "Your hospital application has been removed.",
+      });
+
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+
+
     const newStatus = action === "accept" ? "approved" : "rejected";
 
 
