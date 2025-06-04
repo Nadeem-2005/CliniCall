@@ -29,6 +29,22 @@ export async function POST(req:Request){
             );
         }
 
+        //check appointment request wether it already exists
+        const existingAppointment = await prisma.appointmentment_hospital.findMany({
+            where:{
+                userId: userId,
+                hospitalId: hospitalId,
+                date: new Date(date),
+            }
+        })
+
+        if( existingAppointment.length > 0 ) {
+            return NextResponse.json(
+                { error: "You already have an appointment request for this date" },
+                { status: 400 }
+            );
+        }
+
         // Create the appointment request
         const appointment = await prisma.appointmentment_hospital.create({
             data: {
@@ -60,6 +76,7 @@ export async function POST(req:Request){
         );
 
         return NextResponse.json({ message: "Appointment request sent successfully", appointment }, { status: 200 });
+        
         
     } catch (error) {
         console.error("Error Processing appointment request:", error);

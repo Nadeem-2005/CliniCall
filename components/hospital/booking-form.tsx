@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { redirect } from "next/dist/server/api-utils";
 
 interface BookingFormProps {
   session: any;
@@ -52,7 +53,8 @@ export default function BookingForm({
     if (response.ok) {
       alert("Appointment request sent successfully!");
     } else {
-      alert("Failed to send appointment request.");
+      const errorData = await response.json();
+      alert(errorData.error || "Failed to send appointment request.");
     }
   };
 
@@ -79,7 +81,7 @@ export default function BookingForm({
         </div>
         <div>
           <Label htmlFor="time">Preferred Time</Label>
-          <Input
+          <input
             id="time"
             name="time"
             type="time"
