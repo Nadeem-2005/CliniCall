@@ -72,3 +72,102 @@ export async function sendRejectionMailToHospital(to: string, name: string) {
     `,
   });
 }
+
+//appointment booked mail to user 
+export async function sendAppointmentConfirmationToUserWithHospital(
+  to: string,
+  name: string,
+  hospitalName: string,
+  date: string,
+  time: string
+) {
+  return transporter.sendMail({
+    from: `"Clinical App Team" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "Appointment Booked Successfully",
+    html: `
+      <p>Dear ${name},</p>
+      <p>Your appointment at ${hospitalName} has been successfully booked.</p>
+      <p><strong>Date:</strong> ${date}</p>
+      <p><strong>Time:</strong> ${time}</p>
+      <p>Thank you for using our service!</p>
+      <br/>
+      <p>– Clinical App Team</p>
+    `,
+  });
+}
+
+export async function sendAppointmentNotificationToHospital(
+  to: string,
+  userName: string,
+  hospitalName: string,
+  date: string,
+  time: string,
+  reason: string
+) {
+  return transporter.sendMail({
+    from: `"Clinical App Team" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "New Appointment Booking Notification",
+    html: `
+      <p>Dear ${hospitalName} Team,</p>
+      <p>A new appointment has been booked by <strong>${userName}</strong>.</p>
+      <p><strong>Date:</strong> ${date}</p>
+      <p><strong>Time:</strong> ${time}</p>
+      <p><strong>Reason:</strong> ${reason}</p>
+      <p>Please check your dashboard for more details.</p>
+      <br/>
+      <p>– Clinical App Team</p>
+    `,
+  });
+}
+
+export async function sendAppointmentConfirmationToUserWithDoctor(
+  to: string,
+  userName: string,
+  doctorName: string,
+  hospitalName: string,
+  date: string,
+  time: string
+) {
+  return transporter.sendMail({
+    from: `"Clinical App Team" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "Appointment Confirmed with Doctor",
+    html: `
+      <p>Dear ${userName},</p>
+      <p>Your appointment has been confirmed with <strong>Dr. ${doctorName}</strong> at <strong>${hospitalName}</strong>.</p>
+      <p><strong>Date:</strong> ${date}</p>
+      <p><strong>Time:</strong> ${time}</p>
+      <p>Please arrive at least 10 minutes early.</p>
+      <br/>
+      <p>– Clinical App Team</p>
+    `,
+  });
+}
+
+export async function sendAppointmentNotificationToDoctor(
+  to: string,
+  doctorName: string,
+  userName: string,
+  hospitalName: string,
+  date: string,
+  time: string,
+  reason: string
+) {
+  return transporter.sendMail({
+    from: `"Clinical App Team" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "New Appointment Booked",
+    html: `
+      <p>Dear Dr. ${doctorName},</p>
+      <p>You have a new appointment booked by <strong>${userName}</strong> at <strong>${hospitalName}</strong>.</p>
+      <p><strong>Date:</strong> ${date}</p>
+      <p><strong>Time:</strong> ${time}</p>
+      <p><strong>Reason:</strong> ${reason}</p>
+      <p>Please check your dashboard for more details.</p>
+      <br/>
+      <p>– Clinical App Team</p>
+    `,
+  });
+}
