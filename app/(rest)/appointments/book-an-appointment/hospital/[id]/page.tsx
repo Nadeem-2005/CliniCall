@@ -16,7 +16,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
-import BookingForm from "@/components/hospital/booking-form";
+import BookingForm from "@/components/Forms/hospital/booking-form";
 interface PageProps {
   params: {
     id: string;

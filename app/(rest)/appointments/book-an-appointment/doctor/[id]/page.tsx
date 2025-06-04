@@ -15,12 +15,8 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import prisma from "@/lib/prisma";
+import BookingForm from "@/components/Forms/doctor/booking-form";
 
 interface PageProps {
   params: {
@@ -32,18 +28,16 @@ export default async function Page({ params }: PageProps) {
   const session = await auth();
   if (!session) return redirect("/");
 
-  const userId = params.id;
-
   const doctor = await prisma.doctor.findUnique({
     where: {
-      userId: userId,
+      id: params.id,
     },
     select: {
       name: true,
       specialization: true,
     },
   });
-  // console.log(params);
+  console.log(params);
   console.log("Doctor Details:", doctor);
 
   if (!doctor) {
@@ -90,38 +84,11 @@ export default async function Page({ params }: PageProps) {
             <h2 className="text-2xl font-bold mb-4">
               Book an Appointment with Dr. {doctor.name}
             </h2>
-            <form className="space-y-6 max-w-xl">
-              <div>
-                <Label htmlFor="name">Your Full Name</Label>
-                <Input id="name" name="name" placeholder="John Doe" required />
-              </div>
-              <div>
-                <Label htmlFor="email">Email Address</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="date">Preferred Date</Label>
-                <Input id="date" name="date" type="date" required />
-              </div>
-              <div>
-                <Label htmlFor="reason">Reason for Appointment</Label>
-                <Textarea
-                  id="reason"
-                  name="reason"
-                  placeholder="Describe your symptoms or concerns..."
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full md:w-auto">
-                Submit Appointment Request
-              </Button>
-            </form>
+            <BookingForm
+              session={session}
+              doctorId={params.id}
+              doctorName={doctor.name}
+            />
           </div>
         </div>
       </SidebarInset>
