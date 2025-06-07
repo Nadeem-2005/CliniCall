@@ -76,6 +76,7 @@ export default function BookingForm({
             type="date"
             required
             onChange={handleInputChange}
+            placeholder="Select a date"
           />
         </div>
         <div>
@@ -86,6 +87,7 @@ export default function BookingForm({
             type="time"
             required
             onChange={handleInputChange}
+            placeholder="Select a time"
           />
         </div>
       </div>
