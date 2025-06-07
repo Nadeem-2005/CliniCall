@@ -21,21 +21,33 @@ import {
 export default async function Page() {
   const session = await auth();
 
+  if (!session) return redirect("/");
+
   const history_Doc = await prisma.appointment_doctor.findMany({
     where: {
-      userId: session?.user.id,
+      userId: session.user.id,
+    },
+    include: {
+      doctor: true,
+    },
+    orderBy: {
+      date: "desc",
     },
   });
 
   const history_Hosp = await prisma.appointmentment_hospital.findMany({
     where: {
-      userId: session?.user.id,
+      userId: session.user.id,
+    },
+    include: {
+      hospital: true,
+    },
+    orderBy: {
+      date: "desc",
     },
   });
 
-  return !session ? (
-    redirect("/")
-  ) : (
+  return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
@@ -49,7 +61,7 @@ export default async function Page() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="/Dashboard">Dashboard</BreadcrumbLink>
+                  <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
@@ -60,6 +72,7 @@ export default async function Page() {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          {/* Doctor Appointment History */}
           <h1 className="text-2xl">History of Doctor appointments</h1>
           <div className="bg-muted/50 flex-1 rounded-xl md:min-h-min p-4">
             {history_Doc.length > 0 ? (
@@ -70,16 +83,20 @@ export default async function Page() {
                       <tr className="bg-gray-200">
                         <th className="p-2 border">Doctor</th>
                         <th className="p-2 border">Date</th>
+                        <th className="p-2 border">Time</th>
                         <th className="p-2 border">Status</th>
                       </tr>
                     </thead>
                     <tbody>
                       {history_Doc.map((appointment) => (
                         <tr key={appointment.id} className="border-t">
-                          <td className="p-2 border">{appointment.doctorId}</td>
+                          <td className="p-2 border">
+                            {appointment.doctor.name}
+                          </td>
                           <td className="p-2 border">
                             {appointment.date.toLocaleDateString()}
                           </td>
+                          <td className="p-2 border">{appointment.time}</td>
                           <td className="p-2 border">{appointment.status}</td>
                         </tr>
                       ))}
@@ -93,11 +110,14 @@ export default async function Page() {
                       className="border rounded-lg p-4 shadow-sm bg-white"
                     >
                       <div>
-                        <strong>Doctor:</strong> {appointment.doctorId}
+                        <strong>Doctor:</strong> {appointment.doctor.name}
                       </div>
                       <div>
                         <strong>Date:</strong>{" "}
                         {appointment.date.toLocaleDateString()}
+                      </div>
+                      <div>
+                        <strong>Time:</strong> {appointment.time}
                       </div>
                       <div>
                         <strong>Status:</strong> {appointment.status}
@@ -111,6 +131,7 @@ export default async function Page() {
             )}
           </div>
 
+          {/* Hospital Appointment History */}
           <h1 className="text-2xl">History of Hospital appointments</h1>
           <div className="bg-muted/50 flex-1 rounded-xl md:min-h-min p-4">
             {history_Hosp.length > 0 ? (
@@ -121,6 +142,7 @@ export default async function Page() {
                       <tr className="bg-gray-200">
                         <th className="p-2 border">Hospital</th>
                         <th className="p-2 border">Date</th>
+                        <th className="p-2 border">Time</th>
                         <th className="p-2 border">Status</th>
                       </tr>
                     </thead>
@@ -128,11 +150,12 @@ export default async function Page() {
                       {history_Hosp.map((appointment) => (
                         <tr key={appointment.id} className="border-t">
                           <td className="p-2 border">
-                            {appointment.hospitalId}
+                            {appointment.hospital.name}
                           </td>
                           <td className="p-2 border">
                             {appointment.date.toLocaleDateString()}
                           </td>
+                          <td className="p-2 border">{appointment.time}</td>
                           <td className="p-2 border">{appointment.status}</td>
                         </tr>
                       ))}
@@ -146,11 +169,14 @@ export default async function Page() {
                       className="border rounded-lg p-4 shadow-sm bg-white"
                     >
                       <div>
-                        <strong>Hospital:</strong> {appointment.hospitalId}
+                        <strong>Hospital:</strong> {appointment.hospital.name}
                       </div>
                       <div>
                         <strong>Date:</strong>{" "}
                         {appointment.date.toLocaleDateString()}
+                      </div>
+                      <div>
+                        <strong>Time:</strong> {appointment.time}
                       </div>
                       <div>
                         <strong>Status:</strong> {appointment.status}
