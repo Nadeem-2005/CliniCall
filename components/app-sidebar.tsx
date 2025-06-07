@@ -51,7 +51,7 @@ const data = {
     },
     {
       title: "History",
-      url: "/appointments/History",
+      url: "/appointments/history",
       icon: History,
     },
   ],
