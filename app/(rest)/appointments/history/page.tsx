@@ -20,7 +20,6 @@ import {
 
 export default async function Page() {
   const session = await auth();
-  // console.log("session", session); // for debuggin purposes
 
   const history_Doc = await prisma.appointment_doctor.findMany({
     where: {
@@ -34,8 +33,6 @@ export default async function Page() {
     },
   });
 
-  //   console.log("history_Doc", history_Doc);
-  //   console.log("history_Hosp", history_Hosp);
   return !session ? (
     redirect("/")
   ) : (
@@ -49,7 +46,6 @@ export default async function Page() {
               orientation="vertical"
               className="mr-2 data-[orientation=vertical]:h-4"
             />
-
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
@@ -65,9 +61,108 @@ export default async function Page() {
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <h1 className="text-2xl">History of Doctor appointments</h1>
-          <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min"></div>
+          <div className="bg-muted/50 flex-1 rounded-xl md:min-h-min p-4">
+            {history_Doc.length > 0 ? (
+              <>
+                <div className="hidden md:block">
+                  <table className="w-full text-left border border-gray-300">
+                    <thead>
+                      <tr className="bg-gray-200">
+                        <th className="p-2 border">Doctor</th>
+                        <th className="p-2 border">Date</th>
+                        <th className="p-2 border">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {history_Doc.map((appointment) => (
+                        <tr key={appointment.id} className="border-t">
+                          <td className="p-2 border">{appointment.doctorId}</td>
+                          <td className="p-2 border">
+                            {appointment.date.toLocaleDateString()}
+                          </td>
+                          <td className="p-2 border">{appointment.status}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="md:hidden space-y-4">
+                  {history_Doc.map((appointment) => (
+                    <div
+                      key={appointment.id}
+                      className="border rounded-lg p-4 shadow-sm bg-white"
+                    >
+                      <div>
+                        <strong>Doctor:</strong> {appointment.doctorId}
+                      </div>
+                      <div>
+                        <strong>Date:</strong>{" "}
+                        {appointment.date.toLocaleDateString()}
+                      </div>
+                      <div>
+                        <strong>Status:</strong> {appointment.status}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <p>No appointments found.</p>
+            )}
+          </div>
+
           <h1 className="text-2xl">History of Hospital appointments</h1>
-          <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min"></div>
+          <div className="bg-muted/50 flex-1 rounded-xl md:min-h-min p-4">
+            {history_Hosp.length > 0 ? (
+              <>
+                <div className="hidden md:block">
+                  <table className="w-full text-left border border-gray-300">
+                    <thead>
+                      <tr className="bg-gray-200">
+                        <th className="p-2 border">Hospital</th>
+                        <th className="p-2 border">Date</th>
+                        <th className="p-2 border">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {history_Hosp.map((appointment) => (
+                        <tr key={appointment.id} className="border-t">
+                          <td className="p-2 border">
+                            {appointment.hospitalId}
+                          </td>
+                          <td className="p-2 border">
+                            {appointment.date.toLocaleDateString()}
+                          </td>
+                          <td className="p-2 border">{appointment.status}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="md:hidden space-y-4">
+                  {history_Hosp.map((appointment) => (
+                    <div
+                      key={appointment.id}
+                      className="border rounded-lg p-4 shadow-sm bg-white"
+                    >
+                      <div>
+                        <strong>Hospital:</strong> {appointment.hospitalId}
+                      </div>
+                      <div>
+                        <strong>Date:</strong>{" "}
+                        {appointment.date.toLocaleDateString()}
+                      </div>
+                      <div>
+                        <strong>Status:</strong> {appointment.status}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <p>No appointments found.</p>
+            )}
+          </div>
         </div>
       </SidebarInset>
     </SidebarProvider>
