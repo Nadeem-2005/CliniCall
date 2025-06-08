@@ -201,3 +201,28 @@ export async function sendAppointmentAcceptedByDoctorToUser(
     `,
   });
 }
+
+export async function sendAppointmentRejectedByDoctorToUser(
+  to: string,
+  userName: string,
+  doctorName: string,
+  date: string,
+  time: string
+) {
+  return transporter.sendMail({
+    from: `"Clinical App Team" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "Your Appointment Request Has Been Rejected",
+    html: `
+      <p>Dear ${userName},</p>
+      <p>We regret to inform you that <strong>Dr. ${doctorName}</strong> has <span style="color:red;"><strong>rejected</strong></span> your appointment request.</p>
+      <p><strong>Requested Date:</strong> ${date}</p>
+      <p><strong>Requested Time:</strong> ${time}</p>
+      <p>This may be due to scheduling conflicts or availability issues.</p>
+      <p>You can try booking a different time slot or choose another doctor from your dashboard.</p>
+      <br/>
+      <p>We apologize for the inconvenience and thank you for understanding.</p>
+      <p>– Clinical App Team</p>
+    `,
+  });
+}

@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
+import {
+  sendAppointmentAcceptedByDoctorToUser,
+  sendAppointmentRejectedByDoctorToUser,
+} from "@/lib/mail";
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -17,15 +21,39 @@ export async function POST(req: Request) {
   }
 
   try {
-    await prisma.appointment_doctor.update({
+    const appointment = await prisma.appointment_doctor.update({
       where: { id: appointmentId },
       data: {
         status: action === "accept" ? "accepted" : "rejected",
       },
+      include: {
+        user: true,
+        doctor: true,
+      },
     });
 
+    const { user, doctor, date, time } = appointment;
+
+    if (action === "accept") {
+      await sendAppointmentAcceptedByDoctorToUser(
+        user.email ?? "",
+        user.name ?? "User",
+        doctor.name,
+        new Date(date).toLocaleDateString(),
+        time
+      );
+    } else {
+      await sendAppointmentRejectedByDoctorToUser(
+        user.email ?? "",
+        user.name ?? "User",
+        doctor.name,
+        new Date(date).toLocaleDateString(),
+        time
+      );
+    }
+
     return NextResponse.redirect(
-      new URL("/dashboard/review-appointments", req.url)
+      new URL("/doctor/review-appointments", req.url)
     );
   } catch (error) {
     console.error("Error reviewing appointment:", error);
