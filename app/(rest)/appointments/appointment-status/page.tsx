@@ -58,14 +58,14 @@ export default async function Page() {
     type: "doctor" | "hospital",
     isPending: boolean
   ) => (
-    <div className="rounded-xl border bg-white shadow-md p-5 flex flex-col gap-4">
+    <div className="rounded-2xl border border-gray-200 bg-gray-50 shadow-sm p-6 flex flex-col gap-4">
       <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
       {appointments.length ? (
         <ul className="flex flex-col gap-4">
           {appointments.map((appointment) => {
             const dateStr = new Date(appointment.date)
               .toISOString()
-              .split("T")[0]; // yyyy-mm-dd
+              .split("T")[0];
             const timeStr = appointment.time;
             const upcoming = isUpcoming(dateStr, timeStr);
             const name =
@@ -76,9 +76,9 @@ export default async function Page() {
             return (
               <li
                 key={appointment.id}
-                className="border rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition"
+                className="border border-gray-300 rounded-xl p-5 bg-white hover:shadow-md hover:bg-gray-100 transition"
               >
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-2">
                   <h3 className="text-lg font-semibold text-gray-900">
                     {name}
                   </h3>
@@ -101,7 +101,7 @@ export default async function Page() {
                     </span>
                   </p>
                   {upcoming && (
-                    <span className="inline-block w-fit text-xs mt-1 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full">
+                    <span className="inline-block w-fit text-xs mt-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
                       Upcoming
                     </span>
                   )}
@@ -118,7 +118,6 @@ export default async function Page() {
       )}
     </div>
   );
-
   return (
     <SidebarProvider>
       <AppSidebar />
