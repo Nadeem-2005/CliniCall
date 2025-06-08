@@ -1,4 +1,5 @@
 "use client";
+
 import "@/app/globals.css";
 import { useSession } from "next-auth/react";
 
@@ -14,6 +15,7 @@ import {
   Hospital,
   History,
   CalendarCheck,
+  FileClock,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -21,6 +23,8 @@ import { JoinUs } from "@/components/nav-join-us";
 import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
 import { NavAdmin } from "@/components/nav-admin";
+import { NavDoctor } from "@/components/nav-doctor";
+
 import {
   Sidebar,
   SidebarContent,
@@ -84,6 +88,18 @@ const data = {
       icon: BadgeX,
     },
   ],
+  doctorFunctionalities: [
+    {
+      name: "Review appointments",
+      url: "/doctor/review-appointments",
+      icon: BookOpen,
+    },
+    {
+      name: "Appointment History",
+      url: "/doctor/appointment-history",
+      icon: FileClock,
+    },
+  ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -107,6 +123,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <NavAdmin adminFunctionalities={data.adminFunctionalities} />
           ) : null}
         </>
+        {session?.user.role === "doctor" ? (
+          <NavDoctor doctorFunctionalities={data.doctorFunctionalities} />
+        ) : null}
       </SidebarContent>
       <SidebarFooter>
         {/*explicitly passing user details*/}
