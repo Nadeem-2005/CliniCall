@@ -41,7 +41,7 @@ export function NavDoctor({
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Admin Panel</SidebarGroupLabel>
+      <SidebarGroupLabel>Bookings </SidebarGroupLabel>
       <SidebarMenu>
         {doctorFunctionalities.map((item) => (
           <SidebarMenuItem key={item.name}>
