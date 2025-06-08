@@ -176,3 +176,28 @@ export async function sendAppointmentNotificationToDoctor(
     `,
   });
 }
+
+//appointment status update mail to user from doctor
+export async function sendAppointmentAcceptedByDoctorToUser(
+  to: string,
+  userName: string,
+  doctorName: string,
+  date: string,
+  time: string
+) {
+  return transporter.sendMail({
+    from: `"Clinical App Team" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "Your Appointment Request Has Been Accepted",
+    html: `
+      <p>Dear ${userName},</p>
+      <p>Great news! <strong>Dr. ${doctorName}</strong> has <span style="color:green;"><strong>accepted</strong></span> your appointment request.</p>
+      <p><strong>Date:</strong> ${date}</p>
+      <p><strong>Time:</strong> ${time}</p>
+      <p>Please make sure to be available at the scheduled time and arrive 10 minutes early if it's an in-person consultation.</p>
+      <br/>
+      <p>Thank you for using our service!</p>
+      <p>– Clinical App Team</p>
+    `,
+  });
+}
