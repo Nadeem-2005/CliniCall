@@ -132,7 +132,7 @@ export default async function Page() {
           </div>
 
           {/* Hospital Appointment History */}
-          <h1 className="text-2xl">History of Hospital appointments</h1>
+          <h1 className="text-2xl">History of Hospital/Clinic appointments</h1>
           <div className="bg-muted/50 flex-1 rounded-xl md:min-h-min p-4">
             {history_Hosp.length > 0 ? (
               <>
