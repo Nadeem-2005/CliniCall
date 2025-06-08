@@ -1,8 +1,10 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
-import prisma from "@/lib/prisma";
-
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,61 +13,113 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import prisma from "@/lib/prisma";
+
+function isUpcoming(dateStr: string, timeStr: string): boolean {
+  const now = new Date();
+  const appointmentDateTime = new Date(`${dateStr}T${timeStr}`);
+  return appointmentDateTime > now;
+}
 
 export default async function Page() {
   const session = await auth();
+  if (!session) redirect("/");
 
-  const pendingDoctorAppointments = await prisma.appointment_doctor.findMany({
-    where: {
-      userId: session?.user.id,
-      status: "pending",
-    },
-    include: {
-      doctor: true,
-    },
-  });
+  const [
+    pendingDoctorAppointments,
+    pendingHospitalAppointments,
+    approvedDoctorAppointments,
+    approvedHospitalAppointments,
+  ] = await Promise.all([
+    prisma.appointment_doctor.findMany({
+      where: { userId: session.user.id, status: "pending" },
+      include: { doctor: true },
+    }),
+    prisma.appointmentment_hospital.findMany({
+      where: { userId: session.user.id, status: "pending" },
+      include: { hospital: true },
+    }),
+    prisma.appointment_doctor.findMany({
+      where: { userId: session.user.id, status: "approved" },
+      include: { doctor: true },
+    }),
+    prisma.appointmentment_hospital.findMany({
+      where: { userId: session.user.id, status: "approved" },
+      include: { hospital: true },
+    }),
+  ]);
 
-  const pendingHospitalAppointments =
-    await prisma.appointmentment_hospital.findMany({
-      where: {
-        userId: session?.user.id,
-        status: "pending",
-      },
-      include: {
-        hospital: true,
-      },
-    });
+  const renderCard = (
+    title: string,
+    appointments: any[],
+    type: "doctor" | "hospital",
+    isPending: boolean
+  ) => (
+    <div className="rounded-xl border bg-white shadow-md p-5 flex flex-col gap-4">
+      <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
+      {appointments.length ? (
+        <ul className="flex flex-col gap-4">
+          {appointments.map((appointment) => {
+            const dateStr = new Date(appointment.date)
+              .toISOString()
+              .split("T")[0]; // yyyy-mm-dd
+            const timeStr = appointment.time;
+            const upcoming = isUpcoming(dateStr, timeStr);
+            const name =
+              type === "doctor"
+                ? appointment.doctor.name
+                : appointment.hospital.name;
 
-  const approvedDoctorAppointments = await prisma.appointment_doctor.findMany({
-    where: {
-      userId: session?.user.id,
-      status: "approved",
-    },
-    include: {
-      doctor: true,
-    },
-  });
+            return (
+              <li
+                key={appointment.id}
+                className="border rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition"
+              >
+                <div className="flex flex-col gap-1">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {name}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Date: {new Date(appointment.date).toLocaleDateString()}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Time: {appointment.time}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Status:{" "}
+                    <span
+                      className={`font-medium ${
+                        appointment.status === "approved"
+                          ? "text-green-600"
+                          : "text-orange-500"
+                      }`}
+                    >
+                      {appointment.status}
+                    </span>
+                  </p>
+                  {upcoming && (
+                    <span className="inline-block w-fit text-xs mt-1 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full">
+                      Upcoming
+                    </span>
+                  )}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p className="text-gray-500 text-sm text-center py-8">
+          No {isPending ? "pending" : "approved"}{" "}
+          {type === "doctor" ? "doctor" : "hospital"} appointments.
+        </p>
+      )}
+    </div>
+  );
 
-  const approvedHospitalAppointments =
-    await prisma.appointmentment_hospital.findMany({
-      where: {
-        userId: session?.user.id,
-        status: "approved",
-      },
-      include: {
-        hospital: true,
-      },
-    });
-
-  return !session ? (
-    redirect("/")
-  ) : (
+  return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
@@ -76,7 +130,6 @@ export default async function Page() {
               orientation="vertical"
               className="mr-2 data-[orientation=vertical]:h-4"
             />
-
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
@@ -91,168 +144,41 @@ export default async function Page() {
           </div>
         </header>
 
-        <div className="flex flex-1 flex-col gap-8 p-4 pt-0">
-          {/* Pending Appointments */}
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          {/* Pending Section */}
           <section>
-            <h1 className="text-2xl font-semibold mb-4 text-gray-800">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
               Pending Appointments
             </h1>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Doctors */}
-              <div className="rounded-lg border border-gray-200 bg-white shadow-sm p-6 bg-muted/50">
-                <h2 className="text-lg font-medium mb-3 text-gray-700">
-                  Doctors
-                </h2>
-                {pendingDoctorAppointments.length > 0 ? (
-                  <ul className="space-y-4">
-                    {pendingDoctorAppointments.map((appointment) => {
-                      return (
-                        <li
-                          key={appointment.id}
-                          className="p-4 border border-gray-300 rounded-lg bg-white shadow-sm"
-                        >
-                          <h3 className="text-lg font-semibold text-gray-800">
-                            {appointment.doctor.name}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            Date:{" "}
-                            {new Date(appointment.date).toLocaleDateString()}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            Time: {appointment.time}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            Status: {appointment.status}
-                          </p>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                ) : (
-                  <div className="h-32 flex items-center justify-center text-sm text-gray-500">
-                    No pending doctor appointments.
-                  </div>
-                )}
-              </div>
-
-              {/* Clinics */}
-              <div className="rounded-lg border border-gray-200 bg-white shadow-sm p-6 bg-muted/50">
-                <h2 className="text-lg font-medium mb-3 text-gray-700">
-                  Hospitals / Clinics
-                </h2>
-                {pendingHospitalAppointments.length > 0 ? (
-                  <ul className="space-y-4">
-                    {pendingHospitalAppointments.map((appointment) => {
-                      return (
-                        <li
-                          key={appointment.id}
-                          className="p-4 border border-gray-300 rounded-lg bg-white shadow-sm"
-                        >
-                          <h3 className="text-lg font-semibold text-gray-800">
-                            {appointment.hospital.name}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            Date:{" "}
-                            {new Date(appointment.date).toLocaleDateString()}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            Time: {appointment.time}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            Status: {appointment.status}
-                          </p>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                ) : (
-                  <div className="h-32 flex items-center justify-center text-sm text-gray-500">
-                    No pending hospital appointments.
-                  </div>
-                )}
-              </div>
+              {renderCard("Doctors", pendingDoctorAppointments, "doctor", true)}
+              {renderCard(
+                "Hospitals / Clinics",
+                pendingHospitalAppointments,
+                "hospital",
+                true
+              )}
             </div>
           </section>
 
-          {/* Approved Appointments */}
+          {/* Approved Section */}
           <section>
-            <h1 className="text-2xl font-semibold mb-4 text-gray-800">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
               Approved Appointments
             </h1>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Doctors */}
-              <div className="rounded-lg border border-gray-200 bg-white shadow-sm p-6 bg-muted/50">
-                <h2 className="text-lg font-medium mb-3 text-gray-700">
-                  Doctors
-                </h2>
-                {approvedDoctorAppointments.length > 0 ? (
-                  <ul className="space-y-4">
-                    {approvedDoctorAppointments.map((appointment) => {
-                      return (
-                        <li
-                          key={appointment.id}
-                          className="p-4 border border-gray-300 rounded-lg bg-white shadow-sm"
-                        >
-                          <h3 className="text-lg font-semibold text-gray-800">
-                            {appointment.doctor.name}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            Date:{" "}
-                            {new Date(appointment.date).toLocaleDateString()}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            Time: {appointment.time}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            Status: {appointment.status}
-                          </p>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                ) : (
-                  <div className="h-32 flex items-center justify-center text-sm text-gray-500">
-                    No approved doctor appointments.
-                  </div>
-                )}
-              </div>
-
-              {/* Clinics */}
-              <div className="rounded-lg border border-gray-200 bg-white shadow-sm p-6 bg-muted/50">
-                <h2 className="text-lg font-medium mb-3 text-gray-700">
-                  Hospitals / Clinics
-                </h2>
-                {approvedHospitalAppointments.length > 0 ? (
-                  <ul className="space-y-4">
-                    {approvedHospitalAppointments.map((appointment) => {
-                      return (
-                        <li
-                          key={appointment.id}
-                          className="p-4 border border-gray-300 rounded-lg bg-white shadow-sm"
-                        >
-                          <h3 className="text-lg font-semibold text-gray-800">
-                            {appointment.hospital.name}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            Date:{" "}
-                            {new Date(appointment.date).toLocaleDateString()}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            Time: {appointment.time}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            Status: {appointment.status}
-                          </p>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                ) : (
-                  <div className="h-32 flex items-center justify-center text-sm text-gray-500">
-                    No approved hospital appointments.
-                  </div>
-                )}
-              </div>
+              {renderCard(
+                "Doctors",
+                approvedDoctorAppointments,
+                "doctor",
+                false
+              )}
+              {renderCard(
+                "Hospitals / Clinics",
+                approvedHospitalAppointments,
+                "hospital",
+                false
+              )}
             </div>
           </section>
         </div>

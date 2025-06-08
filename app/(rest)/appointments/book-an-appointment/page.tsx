@@ -38,7 +38,7 @@ export default async function Page() {
     },
   });
 
-  console.log("Doctor List:", docList);
+  // console.log("Doctor List:", docList);
   return (
     <SidebarProvider>
       <AppSidebar />
