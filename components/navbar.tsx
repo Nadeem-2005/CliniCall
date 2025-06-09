@@ -24,8 +24,8 @@ const Navbar = async () => {
               </>
             ) : (
               <div className="flex flex-row items-center justify-center gap-4 text-base text-black">
-                <Link href="/home" className="m-8">
-                  Home
+                <Link href="/dashboard" className="m-8">
+                  Dashboard
                 </Link>
                 <SignOut />
               </div>

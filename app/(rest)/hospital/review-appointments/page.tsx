@@ -83,7 +83,7 @@ export default async function Page() {
                   <form
                     key={appointment.id}
                     method="POST"
-                    action="/api/hospital/appointment-review"
+                    action="/api/hospitals/appointment-review"
                     className="bg-white p-4 mb-4 rounded-lg shadow"
                   >
                     <input
