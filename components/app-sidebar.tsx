@@ -24,6 +24,7 @@ import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
 import { NavAdmin } from "@/components/nav-admin";
 import { NavDoctor } from "@/components/nav-doctor";
+import { NavHospital } from "./nav- hospital";
 
 import {
   Sidebar,
@@ -100,6 +101,18 @@ const data = {
       icon: FileClock,
     },
   ],
+  hospitalFunctionalities: [
+    {
+      name: "Review appointments",
+      url: "/hospital/review-appointments",
+      icon: BookOpen,
+    },
+    {
+      name: "Appointment History",
+      url: "/hospital/appointment-history",
+      icon: FileClock,
+    },
+  ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -113,18 +126,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <>
-          {session?.user?.role == "user" ? (
-            <JoinUs joinUs={data.joinUS} />
-          ) : null}
-        </>
-        <>
-          {session?.user?.role === "admin" ? (
-            <NavAdmin adminFunctionalities={data.adminFunctionalities} />
-          ) : null}
-        </>
+        {/* Conditional rendering based on user role */}
+        {session?.user?.role == "user" ? <JoinUs joinUs={data.joinUS} /> : null}
+        {session?.user?.role === "admin" ? (
+          <NavAdmin adminFunctionalities={data.adminFunctionalities} />
+        ) : null}
         {session?.user.role === "doctor" ? (
           <NavDoctor doctorFunctionalities={data.doctorFunctionalities} />
+        ) : null}
+
+        {session?.user.role === "hospital" ? (
+          <NavHospital hospitalFunctionalities={data.hospitalFunctionalities} />
         ) : null}
       </SidebarContent>
       <SidebarFooter>
