@@ -19,26 +19,29 @@ import prisma from "@/lib/prisma";
 import BookingForm from "@/components/Forms/doctor/booking-form";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function Page({ params }: PageProps) {
   const session = await auth();
   if (!session) return redirect("/");
 
+  const { id } = await params;
+
   const doctor = await prisma.doctor.findUnique({
     where: {
-      id: params.id,
+      id: id,
     },
     select: {
       name: true,
       specialization: true,
     },
   });
-  console.log(params);
-  console.log("Doctor Details:", doctor);
+
+  // console.log("Doctor ID:", id);
+  // console.log("Doctor Details:", doctor);
 
   if (!doctor) {
     return (
@@ -78,7 +81,6 @@ export default async function Page({ params }: PageProps) {
             </Breadcrumb>
           </div>
         </header>
-
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min p-6">
             <h2 className="text-2xl font-bold mb-4">
@@ -86,7 +88,7 @@ export default async function Page({ params }: PageProps) {
             </h2>
             <BookingForm
               session={session}
-              doctorId={params.id}
+              doctorId={id}
               doctorName={doctor.name}
             />
           </div>

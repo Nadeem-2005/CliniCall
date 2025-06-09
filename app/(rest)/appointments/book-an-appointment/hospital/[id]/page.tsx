@@ -18,17 +18,19 @@ import {
 import { Separator } from "@/components/ui/separator";
 import BookingForm from "@/components/Forms/hospital/booking-form";
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function Page({ params }: PageProps) {
   const session = await auth();
   if (!session) return redirect("/");
 
+  const { id } = await params;
+
   const hospital = await prisma.hospital.findUnique({
-    where: { id: params.id },
+    where: { id: id },
     select: { name: true, speciality: true },
   });
 
@@ -73,7 +75,7 @@ export default async function Page({ params }: PageProps) {
             </h2>
             <BookingForm
               session={session}
-              hospitalId={params.id}
+              hospitalId={id}
               hospitalName={hospital.name}
             />
           </div>
