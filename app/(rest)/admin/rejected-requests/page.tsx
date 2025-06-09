@@ -71,14 +71,14 @@ export default async function Page() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Review Requests</BreadcrumbPage>
+                  <BreadcrumbPage>Rejected Requests</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <h1 className="text-2xl font-semibold">Review Requests</h1>
+          <h1 className="text-2xl font-semibold">Rejected Requests</h1>
           <Separator />
           <h2 className="text-2xl">Doctors</h2>
           <div className="bg-muted/50 rounded-xl p-4">
