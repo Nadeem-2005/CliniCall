@@ -228,19 +228,13 @@ export async function sendAppointmentRejectedByDoctorToUser(
 }
 
 //appointment status update mail to user from hospital
-export function sendAppointmentAcceptedByHospitalToUser({
-  to,
-  patientName,
-  hospitalName,
-  date,
-  time,
-}: {
-  to: string;
-  patientName: string;
-  hospitalName: string;
-  date: string;
-  time: string;
-}) {
+export function sendAppointmentAcceptedByHospitalToUser(
+  to: string,
+  patientName: string,
+  hospitalName: string,
+  date: string,
+  time: string
+) {
   return {
     to,
     subject: "Your Appointment Has Been Accepted by the Hospital",
@@ -260,19 +254,13 @@ export function sendAppointmentAcceptedByHospitalToUser({
   };
 }
 
-export function sendAppointmentRejectedByHospitalToUser({
-  to,
-  patientName,
-  hospitalName,
-  date,
-  time,
-}: {
-  to: string;
-  patientName: string;
-  hospitalName: string;
-  date: string;
-  time: string;
-}) {
+export function sendAppointmentRejectedByHospitalToUser(
+  to: string,
+  patientName: string,
+  hospitalName: string,
+  date: string,
+  time: string
+) {
   return {
     to,
     subject: "Your Appointment Has Been Rejected by the Hospital",
