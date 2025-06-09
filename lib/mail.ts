@@ -231,13 +231,13 @@ export async function sendAppointmentRejectedByDoctorToUser(
 export function sendAppointmentAcceptedByHospitalToUser({
   to,
   patientName,
-  doctorName,
+  hospitalName,
   date,
   time,
 }: {
   to: string;
   patientName: string;
-  doctorName: string;
+  hospitalName: string;
   date: string;
   time: string;
 }) {
@@ -247,10 +247,9 @@ export function sendAppointmentAcceptedByHospitalToUser({
     html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.6;">
         <h2>Hello ${patientName},</h2>
-        <p>We are pleased to inform you that your appointment request has been <strong>accepted</strong> by the hospital.</p>
+        <p>We are pleased to inform you that your appointment request to ${hospitalName} has been <strong>accepted</strong> by the hospital.</p>
         <p><strong>Details:</strong></p>
         <ul>
-          <li><strong>Doctor:</strong> Dr. ${doctorName}</li>
           <li><strong>Date:</strong> ${date}</li>
           <li><strong>Time:</strong> ${time}</li>
         </ul>
@@ -264,13 +263,13 @@ export function sendAppointmentAcceptedByHospitalToUser({
 export function sendAppointmentRejectedByHospitalToUser({
   to,
   patientName,
-  doctorName,
+  hospitalName,
   date,
   time,
 }: {
   to: string;
   patientName: string;
-  doctorName: string;
+  hospitalName: string;
   date: string;
   time: string;
 }) {
@@ -280,7 +279,7 @@ export function sendAppointmentRejectedByHospitalToUser({
     html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.6;">
         <h2>Hello ${patientName},</h2>
-        <p>We regret to inform you that your appointment request with Dr. ${doctorName} on <strong>${date}</strong> at <strong>${time}</strong> has been <strong>rejected</strong> by the hospital.</p>
+        <p>We regret to inform you that your appointment request to ${hospitalName} on <strong>${date}</strong> at <strong>${time}</strong> has been <strong>rejected</strong> by the hospital.</p>
         <p>This may be due to scheduling conflicts or unavailability.</p>
         <p>You may try booking another slot at your convenience.</p>
         <p>We apologize for the inconvenience and appreciate your understanding.</p>
