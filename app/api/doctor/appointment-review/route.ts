@@ -8,7 +8,7 @@ import {
 
 export async function POST(req: Request) {
   const session = await auth();
-  if (!session) {
+  if (!session || session.user?.role !== "doctor") {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 

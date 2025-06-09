@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.redirect(
-      new URL("/doctor/review-appointments", req.url)
+      new URL("/hospital/review-appointments", req.url)
     );
   } catch (error) {
     console.error("Error reviewing appointment:", error);
