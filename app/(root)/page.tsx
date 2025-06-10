@@ -64,7 +64,7 @@ export default function HomePage() {
           <form
             action={async () => {
               "use server";
-              await signIn("google", { redirectTo: "/home" });
+              await signIn("google", { redirectTo: "/dashboard" });
             }}
           >
             <button
