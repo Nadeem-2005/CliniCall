@@ -1,7 +1,11 @@
-const { Queue, Worker } = require('bullmq');
-const nodemailer = require('nodemailer');
-require('dotenv').config();
+import { Queue, Worker } from 'bullmq';
+import { createTransport } from 'nodemailer';
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' });
 
+//For debugging purposes
+console.log('EMAIL_USER:', process.env.EMAIL_USER ? 'Loaded' : 'Missing');
+console.log('EMAIL_PASS:', process.env.EMAIL_PASS ? 'Loaded' : 'Missing');
 // Redis connection configuration for BullMQ
 const redisConfig = {
   host: process.env.REDIS_HOST || 'localhost',
@@ -10,11 +14,11 @@ const redisConfig = {
 };
 
 // Email transporter configuration
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
+const transporter = createTransport({
+  service: 'Gmail',
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
