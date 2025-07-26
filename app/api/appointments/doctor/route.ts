@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { sendAppointmentConfirmationToUserWithDoctor, sendAppointmentNotificationToDoctor } from "@/lib/mail";
+import { cache } from "@/lib/redis";
+import {
+  queueAppointmentConfirmationToUserWithDoctor,
+  queueAppointmentNotificationToDoctor,
+} from "@/lib/mail-queue";
+import { appointmentRateLimiter, withRateLimit } from "@/lib/rate-limiter";
 
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   const body = await req.json();
   console.log("Request body:", body);
   const { name, email, date, time, reason, doctorId, userId } = body;
@@ -15,11 +20,25 @@ export async function POST(req: Request) {
       );
     }
 
-    const doctor = await prisma.doctor.findUnique({
-      where: {
-        id: doctorId,
-      },
-    });
+    // Try to get doctor from cache first
+    const cacheKey = `doctor:${doctorId}`;
+    let doctorData = await cache.get(cacheKey);
+    let doctor;
+    if (typeof doctorData === "string") {
+      doctor = JSON.parse(doctorData);
+    } else {
+      // If not in cache, fetch from database
+      doctor = await prisma.doctor.findUnique({
+        where: {
+          id: doctorId,
+        },
+      });
+
+      if (doctor) {
+        // Cache doctor data for 1 hour (3600 seconds)
+        await cache.set(cacheKey, JSON.stringify(doctor), 3600);
+      }
+    }
 
     if (!doctor) {
       return NextResponse.json(
@@ -50,38 +69,44 @@ export async function POST(req: Request) {
       );
     }
 
-     // Create the appointment request
-        const appointment = await prisma.appointment_doctor.create({
-            data: {
-                date: new Date(date),
-                time,
-                reason,
-                doctorId,
-                userId,
-            },
-        });
+    // Create the appointment request
+    const appointment = await prisma.appointment_doctor.create({
+      data: {
+        date: new Date(date),
+        time,
+        reason,
+        doctorId,
+        userId,
+      },
+    });
 
-        // Send notification to the hospital
-        await sendAppointmentNotificationToDoctor(
-            doctor.email,
-            name,
-            doctor.name,
-            date,
-            time,
-            reason
-        );
+    // Queue notification to the doctor (non-blocking)
+    await queueAppointmentNotificationToDoctor(
+      doctor.email,
+      doctor.name,
+      name,
+      date,
+      time,
+      reason
+    );
 
-        // Send confirmation to the user
-        await sendAppointmentConfirmationToUserWithDoctor(
-            email,
-            name,
-            doctor.name,
-            date,
-            time,
-        );
+    // Queue confirmation to the user (non-blocking)
+    await queueAppointmentConfirmationToUserWithDoctor(
+      email,
+      name,
+      doctor.name,
+      date,
+      time
+    );
 
-        return NextResponse.json({ message: "Appointment request sent successfully", appointment }, { status: 200 });
-        
+    // Invalidate related cache entries
+    await cache.delPattern(`appointments:doctor:${doctorId}:*`);
+    await cache.delPattern(`appointments:user:${userId}:*`);
+
+    return NextResponse.json(
+      { message: "Appointment request sent successfully", appointment },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error Booking Appointment:", error);
     return NextResponse.json(
@@ -92,3 +117,6 @@ export async function POST(req: Request) {
     );
   }
 }
+
+// Export rate-limited handler
+export const POST = withRateLimit(appointmentRateLimiter, handlePOST);

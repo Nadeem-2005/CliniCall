@@ -4,8 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "queue-server": "node queue-server.js",
+    "dev:full": "concurrently \"npm run dev\" \"npm run queue-server\"",
     "build": "prisma generate && next build",
     "start": "next start",
+    "start:full": "concurrently \"npm run start\" \"npm run queue-server\"",
     "lint": "next lint",
     "postinstall": "prisma generate"
   },
@@ -21,8 +24,11 @@
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tooltip": "^1.2.7",
+    "bullmq": "^5.56.7",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^17.2.1",
+    "ioredis": "^5.6.1",
     "lucide-react": "^0.511.0",
     "next": "15.3.2",
     "next-auth": "^5.0.0-beta.28",
@@ -34,6 +40,7 @@
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
     "react-spinners": "^0.17.0",
+    "redis": "^5.6.1",
     "tailwind-merge": "^3.3.0"
   },
   "devDependencies": {
@@ -46,6 +53,7 @@
     "@types/react-dom": "^19",
     "@typescript-eslint/eslint-plugin": "^8.33.1",
     "@typescript-eslint/parser": "^8.33.1",
+    "concurrently": "^9.2.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
     "prisma": "^6.8.2",

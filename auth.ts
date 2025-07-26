@@ -5,28 +5,28 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "@/lib/prisma"; // your prisma client import
 
 // Ref: https://next-auth.js.org/getting-started/typescript#module-augmentation
-import { DefaultSession} from "next-auth"
-import { JWT, DefaultJWT } from "next-auth/jwt"
+import { DefaultSession } from "next-auth";
+import { JWT, DefaultJWT } from "next-auth/jwt";
 
 declare module "next-auth" {
   interface Session {
     user: {
-      id: string,
-      role: string,
-    } & DefaultSession["user"]
+      id: string;
+      role: string;
+    } & DefaultSession["user"];
   }
   interface User {
-    id: string,
-    name?: string | null,
-    email?: string | null,
-    image?: string | null,
-    role: string, // Add role to User interface
+    id: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    role: string; // Add role to User interface
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT extends DefaultJWT {
-    role: string,
+    role: string;
   }
 }
 
@@ -41,10 +41,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           name: profile.name,
           email: profile.email,
           image: profile.picture,
-          role: "user" // Default role for new users
+          role: "user", // Default role for new users
         };
-      }
-    })
+      },
+    }),
   ],
   callbacks: {
     async jwt({ token, user }) {
@@ -60,6 +60,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.role = token.role;
       }
       return session;
-    }
-  }
+    },
+  },
 });
