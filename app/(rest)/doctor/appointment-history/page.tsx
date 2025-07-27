@@ -18,6 +18,13 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import {
+  ReactElement,
+  JSXElementConstructor,
+  ReactNode,
+  ReactPortal,
+  Key,
+} from "react";
 
 interface PageProps {
   searchParams: { page?: string; limit?: string };
@@ -46,7 +53,9 @@ export default async function Page({ searchParams }: PageProps) {
   let reviewedAppointments, totalCount;
 
   if (cachedData) {
-    ({ reviewedAppointments, totalCount } = cachedData);
+    const parsedData =
+      typeof cachedData === "string" ? JSON.parse(cachedData) : cachedData;
+    ({ reviewedAppointments, totalCount } = parsedData);
   } else {
     // Fetch from database with pagination
     const [appointments, count] = await Promise.all([
@@ -121,52 +130,142 @@ export default async function Page({ searchParams }: PageProps) {
               Showing {reviewedAppointments.length} of {totalCount} appointments
               (Page {page} of {totalPages})
             </div>
-            
+
             {reviewedAppointments.length > 0 ? (
               <>
-                {reviewedAppointments.map((appointment) => {
-                const appointmentDateTime = new Date(
-                  `${appointment.date}T${appointment.time}`
-                );
-                const isUpcoming = appointmentDateTime > now;
+                {reviewedAppointments.map(
+                  (appointment: {
+                    date: string | number | Date;
+                    time:
+                      | string
+                      | number
+                      | bigint
+                      | boolean
+                      | ReactElement<
+                          unknown,
+                          string | JSXElementConstructor<any>
+                        >
+                      | Iterable<ReactNode>
+                      | ReactPortal
+                      | Promise<
+                          | string
+                          | number
+                          | bigint
+                          | boolean
+                          | ReactPortal
+                          | ReactElement<
+                              unknown,
+                              string | JSXElementConstructor<any>
+                            >
+                          | Iterable<ReactNode>
+                          | null
+                          | undefined
+                        >
+                      | null
+                      | undefined;
+                    id: Key | null | undefined;
+                    status: string;
+                    user: {
+                      name:
+                        | string
+                        | number
+                        | bigint
+                        | boolean
+                        | ReactElement<
+                            unknown,
+                            string | JSXElementConstructor<any>
+                          >
+                        | Iterable<ReactNode>
+                        | ReactPortal
+                        | Promise<
+                            | string
+                            | number
+                            | bigint
+                            | boolean
+                            | ReactPortal
+                            | ReactElement<
+                                unknown,
+                                string | JSXElementConstructor<any>
+                              >
+                            | Iterable<ReactNode>
+                            | null
+                            | undefined
+                          >
+                        | null
+                        | undefined;
+                      email:
+                        | string
+                        | number
+                        | bigint
+                        | boolean
+                        | ReactElement<
+                            unknown,
+                            string | JSXElementConstructor<any>
+                          >
+                        | Iterable<ReactNode>
+                        | ReactPortal
+                        | Promise<
+                            | string
+                            | number
+                            | bigint
+                            | boolean
+                            | ReactPortal
+                            | ReactElement<
+                                unknown,
+                                string | JSXElementConstructor<any>
+                              >
+                            | Iterable<ReactNode>
+                            | null
+                            | undefined
+                          >
+                        | null
+                        | undefined;
+                    };
+                    reason: any;
+                  }) => {
+                    const appointmentDateTime = new Date(
+                      `${appointment.date}T${appointment.time}`
+                    );
+                    const isUpcoming = appointmentDateTime > now;
 
-                return (
-                  <div
-                    key={appointment.id}
-                    className={`bg-white p-4 mb-4 rounded-lg shadow border-l-4 ${
-                      appointment.status === "accepted"
-                        ? "border-green-500"
-                        : "border-red-500"
-                    }`}
-                  >
-                    <h3 className="text-xl font-semibold mb-2">
-                      Appointment with {appointment.user?.name}
-                    </h3>
-                    <p>
-                      <strong>Email:</strong> {appointment.user?.email}
-                    </p>
-                    <p>
-                      <strong>Reason:</strong> {appointment.reason ?? "N/A"}
-                    </p>
-                    <p>
-                      <strong>Date:</strong>{" "}
-                      {new Date(appointment.date).toLocaleDateString()}
-                    </p>
-                    <p>
-                      <strong>Time:</strong> {appointment.time}
-                    </p>
-                    <p>
-                      <strong>Status:</strong>{" "}
-                      {appointment.status.charAt(0).toUpperCase() +
-                        appointment.status.slice(1)}
-                    </p>
-                    <p>
-                      <strong>Upcoming:</strong> {isUpcoming ? "Yes" : "No"}
-                    </p>
-                  </div>
-                );
-                })}
-                
+                    return (
+                      <div
+                        key={appointment.id}
+                        className={`bg-white p-4 mb-4 rounded-lg shadow border-l-4 ${
+                          appointment.status === "accepted"
+                            ? "border-green-500"
+                            : "border-red-500"
+                        }`}
+                      >
+                        <h3 className="text-xl font-semibold mb-2">
+                          Appointment with {appointment.user?.name}
+                        </h3>
+                        <p>
+                          <strong>Email:</strong> {appointment.user?.email}
+                        </p>
+                        <p>
+                          <strong>Reason:</strong> {appointment.reason ?? "N/A"}
+                        </p>
+                        <p>
+                          <strong>Date:</strong>{" "}
+                          {new Date(appointment.date).toLocaleDateString()}
+                        </p>
+                        <p>
+                          <strong>Time:</strong> {appointment.time}
+                        </p>
+                        <p>
+                          <strong>Status:</strong>{" "}
+                          {appointment.status.charAt(0).toUpperCase() +
+                            appointment.status.slice(1)}
+                        </p>
+                        <p>
+                          <strong>Upcoming:</strong> {isUpcoming ? "Yes" : "No"}
+                        </p>
+                      </div>
+                    );
+                  }
+                )}
+
                 {/* Pagination Controls */}
                 <div className="flex justify-between items-center mt-6 pt-4 border-t">
                   <div className="flex gap-2">
@@ -187,7 +286,7 @@ export default async function Page({ searchParams }: PageProps) {
                       </a>
                     )}
                   </div>
-                  
+
                   <div className="flex gap-1">
                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                       const pageNum = i + 1;
