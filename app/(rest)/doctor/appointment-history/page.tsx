@@ -27,16 +27,17 @@ import {
 } from "react";
 
 interface PageProps {
-  searchParams: { page?: string; limit?: string };
+  searchParams: Promise<{ page?: string; limit?: string }>;
 }
 
 export default async function Page({ searchParams }: PageProps) {
   const session = await auth();
   if (!session) return redirect("/");
 
+  const params = await searchParams;
   // Get pagination parameters
-  const page = parseInt(searchParams.page || "1");
-  const limit = parseInt(searchParams.limit || "10");
+  const page = parseInt(params.page || "1");
+  const limit = parseInt(params.limit || "10");
   const skip = (page - 1) * limit;
 
   const doctor = await prisma.doctor.findUnique({
