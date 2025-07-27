@@ -211,6 +211,7 @@ export const notifyHospitalNewAppointment = async (
 export const optimizePusherConnection = () => {
   // The Pusher server SDK does not support connection event handlers.
   // This function is a placeholder for future server-side connection optimizations if needed.
+  //by nadeem
 };
 
 // Graceful shutdown

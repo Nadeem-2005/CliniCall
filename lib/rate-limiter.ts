@@ -129,8 +129,8 @@ export const apiRateLimiter = new RateLimiter({
 });
 
 export const appointmentRateLimiter = new RateLimiter({
-  // windowMs: 60 * 60 * 1000, // 1 hour
-  windowMs: 60 * 60,
+  windowMs: 60 * 60 * 1000, // 1 hour
+  // windowMs: 60 * 60,
   maxRequests: 10, // 10 appointment bookings per hour
   keyGenerator: (req) => {
     // Rate limit by user ID for appointment bookings
