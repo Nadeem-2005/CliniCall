@@ -1,5 +1,5 @@
 // lib/prisma.ts
-import { PrismaClient } from '../app/generated/prisma';
+import { PrismaClient } from "../app/generated/prisma";
 
 // Global variable to store Prisma client instance
 declare global {
@@ -14,24 +14,24 @@ const createPrismaClient = () => {
         url: process.env.DATABASE_URL,
       },
     },
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    // log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   });
 };
 
 // Singleton pattern for Prisma client to prevent multiple instances
 const prisma = globalThis.__prisma ?? createPrismaClient();
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   globalThis.__prisma = prisma;
 }
 
 // Connection pool optimization
 prisma.$connect().catch((error) => {
-  console.error('Failed to connect to database:', error);
+  console.error("Failed to connect to database:", error);
 });
 
 // Graceful shutdown
-process.on('beforeExit', async () => {
+process.on("beforeExit", async () => {
   await prisma.$disconnect();
 });
 

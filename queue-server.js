@@ -6,13 +6,24 @@ dotenv.config({ path: '.env.local' });
 //For debugging purposes
 console.log('EMAIL_USER:', process.env.EMAIL_USER ? 'Loaded' : 'Missing');
 console.log('EMAIL_PASS:', process.env.EMAIL_PASS ? 'Loaded' : 'Missing');
-// Redis connection configuration for BullMQ
-const redisConfig = {
-  host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT || '6379'),
-  password: process.env.REDIS_PASSWORD,
-};
+console.log('REDIS_URL:', process.env.REDIS_URL ? 'Loaded' : 'Missing');
+// Redis connection configuration for BullMQ (local development)
+// const redisConfig = {
+//   host: process.env.REDIS_HOST || 'localhost',
+//   port: parseInt(process.env.REDIS_PORT || '6379'),
+//   password: process.env.REDIS_PASSWORD,
+// };
 
+// Redis connection configuration for production using Upstash
+const redisUrl = process.env.REDIS_URL;
+const redisConfig = redisUrl
+  ? { url: redisUrl }
+  : {
+      host: process.env.REDIS_HOST || "localhost",
+      port: parseInt(process.env.REDIS_PORT || "6379"),
+      password: process.env.REDIS_PASSWORD,
+    };
+console.log('Using Redis URL:', redisConfig);
 // Email transporter configuration
 const transporter = createTransport({
   service: 'Gmail',
@@ -160,6 +171,6 @@ process.on('SIGTERM', gracefulShutdown);
 process.on('SIGINT', gracefulShutdown);
 
 console.log('Queue server started successfully');
-console.log(`Listening for jobs on Redis: ${redisConfig.host}:${redisConfig.port}`);
+console.log(`Listening for jobs on Redis URL: ${redisConfig}`);
 console.log('Email queue processing up to 10 concurrent jobs');
 console.log('Notification queue processing up to 5 concurrent jobs');

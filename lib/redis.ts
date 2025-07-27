@@ -1,10 +1,19 @@
 import Redis from "ioredis";
 
 // Redis client configuration
-const redis = new Redis({
-  host: process.env.REDIS_HOST || "localhost",
-  port: parseInt(process.env.REDIS_PORT || "6379"),
-  password: process.env.REDIS_PASSWORD,
+console.log(
+  process.env.REDIS_URL
+    ? "Using Upstash Redis URL"
+    : "Using local Redis configuration"
+);
+const redis = new Redis(process.env.REDIS_URL!, {
+  //the 3 comments below are for local development
+  // host: process.env.REDIS_HOST || "localhost",
+  // port: parseInt(process.env.REDIS_PORT || "6379"),
+  // password: process.env.REDIS_PASSWORD,
+
+  //the line below is for production using Upstash
+
   maxRetriesPerRequest: 3,
   lazyConnect: true,
   keepAlive: 30000,
