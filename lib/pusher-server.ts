@@ -1,5 +1,5 @@
-import Pusher from 'pusher';
-import { queueNotification } from './queue';
+import Pusher from "pusher";
+import { queueNotification } from "./queue";
 
 // Singleton Pusher instance
 let pusherInstance: Pusher | null = null;
@@ -14,7 +14,6 @@ const getPusherInstance = () => {
       useTLS: true,
       // Connection optimization
       timeout: 30000,
-      keepAlive: true,
     });
   }
   return pusherInstance;
@@ -38,13 +37,13 @@ class NotificationBatcher {
 
   addNotification(notification: BatchNotification) {
     const key = `${notification.userId}-${notification.channel}`;
-    
+
     if (!this.batch.has(key)) {
       this.batch.set(key, []);
     }
-    
+
     this.batch.get(key)!.push(notification);
-    
+
     // If batch is full, process immediately
     if (this.batch.get(key)!.length >= this.BATCH_SIZE) {
       this.processBatch(key);
@@ -58,7 +57,7 @@ class NotificationBatcher {
     if (this.batchTimeout) {
       clearTimeout(this.batchTimeout);
     }
-    
+
     this.batchTimeout = setTimeout(() => {
       this.processAllBatches();
     }, this.BATCH_DELAY);
@@ -69,7 +68,7 @@ class NotificationBatcher {
     if (!notifications || notifications.length === 0) return;
 
     const pusher = getPusherInstance();
-    
+
     try {
       // Group notifications by channel for efficient sending
       const channelGroups = notifications.reduce((groups, notif) => {
@@ -81,26 +80,32 @@ class NotificationBatcher {
       }, {} as Record<string, BatchNotification[]>);
 
       // Send batched notifications
-      const promises = Object.entries(channelGroups).map(([channel, notifs]) => {
-        if (notifs.length === 1) {
-          // Single notification
-          return pusher.trigger(channel, notifs[0].event, notifs[0].data);
-        } else {
-          // Batch notification
-          return pusher.trigger(channel, 'batch-notification', {
-            notifications: notifs.map(n => ({ event: n.event, data: n.data }))
-          });
+      const promises = Object.entries(channelGroups).map(
+        ([channel, notifs]) => {
+          if (notifs.length === 1) {
+            // Single notification
+            return pusher.trigger(channel, notifs[0].event, notifs[0].data);
+          } else {
+            // Batch notification
+            return pusher.trigger(channel, "batch-notification", {
+              notifications: notifs.map((n) => ({
+                event: n.event,
+                data: n.data,
+              })),
+            });
+          }
         }
-      });
+      );
 
       await Promise.all(promises);
-      console.log(`Processed batch of ${notifications.length} notifications for ${key}`);
-      
+      console.log(
+        `Processed batch of ${notifications.length} notifications for ${key}`
+      );
     } catch (error) {
       console.error(`Failed to process notification batch for ${key}:`, error);
-      
+
       // Re-queue failed notifications
-      notifications.forEach(notif => {
+      notifications.forEach((notif) => {
         queueNotification({
           userId: notif.userId,
           message: JSON.stringify(notif.data),
@@ -114,8 +119,8 @@ class NotificationBatcher {
 
   private async processAllBatches() {
     const keys = Array.from(this.batch.keys());
-    await Promise.all(keys.map(key => this.processBatch(key)));
-    
+    await Promise.all(keys.map((key) => this.processBatch(key)));
+
     if (this.batchTimeout) {
       clearTimeout(this.batchTimeout);
       this.batchTimeout = null;
@@ -140,7 +145,7 @@ export const sendRealtimeNotification = async (
     try {
       await pusher.trigger(channel, event, data);
     } catch (error) {
-      console.error('Failed to send immediate notification:', error);
+      console.error("Failed to send immediate notification:", error);
       // Fallback to queue
       await queueNotification({
         userId,
@@ -168,7 +173,7 @@ export const notifyAppointmentUpdate = async (
   await sendRealtimeNotification(
     userId,
     `user-${userId}`,
-    'appointment-update',
+    "appointment-update",
     appointmentData,
     immediate
   );
@@ -182,7 +187,7 @@ export const notifyDoctorNewAppointment = async (
   await sendRealtimeNotification(
     doctorId,
     `doctor-${doctorId}`,
-    'new-appointment',
+    "new-appointment",
     appointmentData,
     immediate
   );
@@ -196,7 +201,7 @@ export const notifyHospitalNewAppointment = async (
   await sendRealtimeNotification(
     hospitalId,
     `hospital-${hospitalId}`,
-    'new-appointment',
+    "new-appointment",
     appointmentData,
     immediate
   );
@@ -204,27 +209,15 @@ export const notifyHospitalNewAppointment = async (
 
 // Connection management
 export const optimizePusherConnection = () => {
-  const pusher = getPusherInstance();
-  
-  // Set up connection event handlers
-  pusher.connection?.bind('connected', () => {
-    console.log('Pusher connected successfully');
-  });
-  
-  pusher.connection?.bind('error', (error: any) => {
-    console.error('Pusher connection error:', error);
-  });
-  
-  pusher.connection?.bind('disconnected', () => {
-    console.log('Pusher disconnected');
-  });
+  // The Pusher server SDK does not support connection event handlers.
+  // This function is a placeholder for future server-side connection optimizations if needed.
 };
 
 // Graceful shutdown
-process.on('SIGTERM', async () => {
+process.on("SIGTERM", async () => {
   if (pusherInstance) {
     // Process any remaining batches
-    await notificationBatcher['processAllBatches']();
+    await notificationBatcher["processAllBatches"]();
     pusherInstance = null;
   }
 });
