@@ -38,36 +38,31 @@ export class RateLimiter {
   async checkLimit(req: Request): Promise<RateLimitResult> {
     const key = this.config.keyGenerator!(req);
     const now = Date.now();
-    const windowStart = now - this.config.windowMs;
+    const windowStart = Math.floor(now / this.config.windowMs);
+    const windowKey = `${key}:${windowStart}`;
 
     try {
-      // Use Redis sorted set to track requests in time window
+      // Use simple counter with expiration - much more efficient than sorted sets
       const pipe = redis.pipeline();
-
-      // Remove expired entries
-      pipe.zremrangebyscore(key, 0, windowStart);
-
-      // Count current requests in window
-      pipe.zcard(key);
-
-      // Add current request
-      pipe.zadd(key, now, `${now}-${Math.random()}`);
-
-      // Set expiration
-      pipe.expire(key, Math.ceil(this.config.windowMs / 1000));
-
+      
+      // Get current count and increment atomically
+      pipe.incr(windowKey);
+      pipe.expire(windowKey, Math.ceil(this.config.windowMs / 1000));
+      
+      // Track pipeline operation
+      console.log("Rate limiter: Using Redis pipeline for rate limiting");
       const results = await pipe.exec();
-
+      
       if (!results) {
         throw new Error("Redis pipeline failed");
       }
 
-      const currentCount = (results[1][1] as number) || 0;
-      const remaining = Math.max(0, this.config.maxRequests - currentCount - 1);
-      const resetTime = now + this.config.windowMs;
+      const currentCount = (results[0][1] as number) || 0;
+      const remaining = Math.max(0, this.config.maxRequests - currentCount);
+      const resetTime = (windowStart + 1) * this.config.windowMs;
 
       return {
-        success: currentCount < this.config.maxRequests,
+        success: currentCount <= this.config.maxRequests,
         remaining,
         resetTime,
         total: this.config.maxRequests,

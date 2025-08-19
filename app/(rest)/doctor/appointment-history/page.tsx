@@ -90,8 +90,13 @@ export default async function Page({ searchParams }: PageProps) {
     reviewedAppointments = appointments;
     totalCount = count;
 
-    // Cache the results for 5 minutes
-    await cache.set(cacheKey, { reviewedAppointments, totalCount }, 300);
+    // Cache the results for 5 minutes with tags for efficient invalidation
+    await cache.setWithTags(
+      cacheKey, 
+      { reviewedAppointments, totalCount }, 
+      300,
+      [`doctor_appointments:${doctor.id}`, `appointment_history:${doctor.id}`]
+    );
   }
 
   const totalPages = Math.ceil(totalCount / limit);

@@ -46,8 +46,8 @@ async function handlePOST(req: Request) {
       });
 
       if (hospital) {
-        // Cache hospital data for 1 hour (3600 seconds)
-        await cache.set(cacheKey, JSON.stringify(hospital), 3600);
+        // Cache hospital data for 1 hour with tags for efficient invalidation
+        await cache.setWithTags(cacheKey, hospital, 3600, [`hospital:${hospitalId}`]);
       }
     }
 
@@ -104,9 +104,11 @@ async function handlePOST(req: Request) {
       time
     );
 
-    // Invalidate related cache entries
-    await cache.delPattern(`appointments:hospital:${hospitalId}:*`);
-    await cache.delPattern(`appointments:user:${userId}:*`);
+    // Invalidate related cache entries using tags (much more efficient)
+    await cache.invalidateByTags([
+      `hospital_appointments:${hospitalId}`,
+      `user_appointments:${userId}`
+    ]);
 
     return NextResponse.json(
       { message: "Appointment request sent successfully", appointment },

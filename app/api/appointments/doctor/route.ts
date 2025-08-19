@@ -35,8 +35,8 @@ async function handlePOST(req: Request) {
       });
 
       if (doctor) {
-        // Cache doctor data for 1 hour (3600 seconds)
-        await cache.set(cacheKey, JSON.stringify(doctor), 3600);
+        // Cache doctor data for 1 hour with tags for efficient invalidation
+        await cache.setWithTags(cacheKey, doctor, 3600, [`doctor:${doctorId}`]);
       }
     }
 
@@ -99,9 +99,11 @@ async function handlePOST(req: Request) {
       time
     );
 
-    // Invalidate related cache entries
-    await cache.delPattern(`appointments:doctor:${doctorId}:*`);
-    await cache.delPattern(`appointments:user:${userId}:*`);
+    // Invalidate related cache entries using tags (much more efficient)
+    await cache.invalidateByTags([
+      `doctor_appointments:${doctorId}`,
+      `user_appointments:${userId}`
+    ]);
 
     return NextResponse.json(
       { message: "Appointment request sent successfully", appointment },
