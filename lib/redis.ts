@@ -64,6 +64,7 @@ console.log(
 const redis = process.env.REDIS_URL
   ? new Redis(process.env.REDIS_URL, {
       maxRetriesPerRequest: 3,
+      enableAutoPipelining: true, // Enable auto pipelining for better performance
       lazyConnect: true,
       keepAlive: 30000,
       connectTimeout: 10000,
@@ -74,6 +75,7 @@ const redis = process.env.REDIS_URL
       host: process.env.REDIS_HOST || "127.0.0.1",
       port: parseInt(process.env.REDIS_PORT || "6379", 10),
       password: process.env.REDIS_PASSWORD || undefined,
+      enableAutoPipelining: true, // Enable auto pipelining for better performance
     });
 
 // Handle Redis connection events
