@@ -36,7 +36,7 @@
 // });
 
 // export default prisma;
-import { PrismaClient } from "../app/generated/prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
 const globalForPrisma = global as unknown as {
@@ -44,7 +44,7 @@ const globalForPrisma = global as unknown as {
 };
 
 const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.DATABASE_URL_DIRECT,
 });
 
 const prisma =
