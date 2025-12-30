@@ -10,7 +10,7 @@
     "start": "next start",
     "start:full": "concurrently \"npm run start\" \"npm run queue-server\"",
     "lint": "next lint",
-    "postinstall": "prisma generate --no-engine"
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
